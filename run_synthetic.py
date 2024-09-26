@@ -46,7 +46,6 @@ def UAE(prediction, reference):
     """ Uniform absolute error max_i |v_i - hat v_i| """
     return np.max(np.linalg.norm(prediction - reference, axis = 0))
 
-
 def run_example(n_samples,
                 ambient_dim,
                 noise,
@@ -95,10 +94,9 @@ def run_example(n_samples,
                                                             var_f = 0.00,
                                                             tube = 'l2',
                                                             args_f = args_f)
-    
     print("Finished N = {0}     D = {1}     sigma = {2}     sigma_f = {3}   rep = {4}".format(
         n_samples, ambient_dim, noise, var_f, rep))
-
+    return pdisc, points, fval, points_CV, fval_CV, points_test, fval_test
 
 if __name__ == "__main__":
     # Get number of jobs from sys.argv
