@@ -134,15 +134,15 @@ def run_example(n_samples,
                 comp_time[i1,i2,i3,i4,:,idx,rep] = end - start
             start = end
         except (RuntimeError, ValueError) as e: # Estimator throws an error if one of the level sets is not populated at all (happens only for dyadic cells).
-            print e
+            print(e)            
             f_f_error_CV[i1,i2,i3,i4,:,idx,rep] = 1e16
             f_f_error_test[i1,i2,i3,i4,:,idx,rep] = 1e16
             f_tangent_error[i1,i2,i3,i4,:,idx,rep] = 1e16
         #print "Tangent error: ", f_tangent_error[i1,i2,i3,i4,0,idx,rep]
         #print "Function error (CV): ", f_f_error_CV[i1,i2,i3,i4,:,idx,rep]
         #print "Function error (Test): ", f_f_error_test[i1,i2,i3,i4,:,idx,rep]
-    print "Finished N = {0}     D = {1}     sigma = {2}     sigma_f = {3}   rep = {4}".format(
-        n_samples, ambient_dim, noise, var_f, rep)
+    print("Finished N = {0}     D = {1}     sigma = {2}     sigma_f = {3}   rep = {4}".format(
+        n_samples, ambient_dim, noise, var_f, rep))
 
 
 if __name__ == "__main__":
@@ -151,7 +151,7 @@ if __name__ == "__main__":
         n_jobs = int(sys.argv[1])
     else:
         n_jobs = 1 # Default 1 jobs
-    print 'Using n_jobs = {0}'.format(n_jobs)
+    print('Using n_jobs = {0}'.format(n_jobs))
     # Define manifolds to test
     manifolds = [#{'start' : 0, 'end' : 1.0, 'manifold_id' : 'identity'},
                 {'start' : 0, 'end' : np.pi, 'manifold_id' : 'scurve'},
@@ -168,7 +168,7 @@ if __name__ == "__main__":
             data = np.load('random_polynomials/random_polynomial_for_' + manifold['manifold_id'] + '.npz')
             bases = data['bases']
             coeffs = data['coeffs']
-        print "Considering manifold {0}".format(manifold['manifold_id'])
+        print("Considering manifold {0}".format(manifold['manifold_id']))
         # Parameters
         run_for = {
             'N' : [200 * (2 ** i) for i in range(13)],
