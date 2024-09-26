@@ -95,52 +95,7 @@ def run_example(n_samples,
                                                             var_f = 0.00,
                                                             tube = 'l2',
                                                             args_f = args_f)
-    # for idx, param in enumerate(parametergrid):
-    #     if var_f == 0.0:
-    #         nNei = [1] # Optimal choice kNN for noisefree data
-    #         J = np.floor(float(n_samples_train)/float(ambient_dim * estimator['options']['noisefree_levelset_fac'])).astype('int')
-    #     else:
-    #         nNei = np.ceil(np.array(estimator['options']['n_neighbors']) * np.power(n_samples, 2.0/3.0)).astype('int')
-    #         J = param['n_levelsets']
-    #     start = time.time()
-    #     nsim_kNN = NSIM_Estimator(n_neighbors = nNei,
-    #                               n_levelsets = J,
-    #                               ball_radius = param['ball_radius'],
-    #                               split_by = estimator['options']['split_by'])
-    #     try:
-    #         nsim_kNN = nsim_kNN.fit(points.T, fval)
-    #         fval_predict_CV = nsim_kNN.predict(points_CV.T)
-    #         fval_predict_test = nsim_kNN.predict(points_test.T)
-    #         end = time.time()
-    #         # Tangent Error
-    #         J_real = len(set(nsim_kNN.original_labels_))
-    #         tan_errs = np.zeros(J_real)
-    #         for i in range(J_real):
-    #             tmean = np.mean(pdisc[nsim_kNN.original_labels_ == i])
-    #             real_tangent = manifold.get_tangent(tmean)
-    #             tan_errs[i] = np.minimum(np.linalg.norm(real_tangent - nsim_kNN.tangents_[i,:]),
-    #                             np.linalg.norm(real_tangent + nsim_kNN.tangents_[i,:]))
-    #         if var_f == 0:
-    #             f_f_error_CV[i1,i2,i3,i4,:,:,rep] = RMSE(np.reshape(fval_predict_CV[:,0], (1,-1)), np.reshape(fval_CV, (1,-1)))
-    #             f_f_error_test[i1,i2,i3,i4,:,:,rep] = RMSE(np.reshape(fval_predict_test[:,0], (1,-1)), np.reshape(fval_test, (1,-1)))
-    #             comp_time[i1,i2,i3,i4,:,:,rep] = end - start
-    #             f_tangent_error[i1,i2,i3,i4,:,:,rep] = np.sqrt(np.mean(np.square(tan_errs)))
-    #             break # In the noise free case it is not necessary to crossvalidate parameters
-    #         else:
-    #             for l in range(len(nNei)):
-    #                 f_f_error_CV[i1,i2,i3,i4,l,idx,rep] = RMSE(np.reshape(fval_predict_CV[:,l], (1,-1)), np.reshape(fval_CV, (1,-1)))
-    #                 f_f_error_test[i1,i2,i3,i4,l,idx,rep] = RMSE(np.reshape(fval_predict_test[:,l], (1,-1)), np.reshape(fval_test, (1,-1)))
-    #             f_tangent_error[i1,i2,i3,i4,:,idx,rep] = np.sqrt(np.mean(np.square(tan_errs)))
-    #             comp_time[i1,i2,i3,i4,:,idx,rep] = end - start
-    #         start = end
-    #     except (RuntimeError, ValueError) as e: # Estimator throws an error if one of the level sets is not populated at all (happens only for dyadic cells).
-    #         print(e)            
-    #         f_f_error_CV[i1,i2,i3,i4,:,idx,rep] = 1e16
-    #         f_f_error_test[i1,i2,i3,i4,:,idx,rep] = 1e16
-    #         f_tangent_error[i1,i2,i3,i4,:,idx,rep] = 1e16
-    #     #print "Tangent error: ", f_tangent_error[i1,i2,i3,i4,0,idx,rep]
-    #     #print "Function error (CV): ", f_f_error_CV[i1,i2,i3,i4,:,idx,rep]
-    #     #print "Function error (Test): ", f_f_error_test[i1,i2,i3,i4,:,idx,rep]
+    
     print("Finished N = {0}     D = {1}     sigma = {2}     sigma_f = {3}   rep = {4}".format(
         n_samples, ambient_dim, noise, var_f, rep))
 
