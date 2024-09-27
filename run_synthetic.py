@@ -48,16 +48,12 @@ def run_example(n_samples,
                 random_seeds,
                 manifold,
                 f_on_manifold,
-                estimator,
                 rep, i1, i2, i3, i4, # Indices to write into
                 args_f = None):
     """
     Main function to run a single experiment. Saves the results into the
     given files. The test manifold is set below.
     """
-    assert 'options' in estimator, "MAIN: No 'options' key in estimator dict"
-    # Check if crossvalidation is done
-    CV_split = estimator['options'].get('CV_split', 0.0)
     np.random.seed(random_seeds[i1, i2, i3, i4, rep])
     # Setting the test manifold, check synthethic_problem_factory.curves
     manifold = get_manifold(ambient_dim, **manifold)
@@ -177,6 +173,17 @@ if __name__ == "__main__":
                                         rep, i1, i2, i3, i4,
                                         savestr_base = savestr_base + '/' + str(rep) + '/',
                                         args_f = (bases, coeffs))
+                                    
+                                    run_example(n_samples,
+                                    ambient_dim,
+                                    noise,
+                                    var_f,
+                                    random_seeds,
+                                    manifold,
+                                    f_on_manifold,
+                                    estimator,
+                                    rep, i1, i2, i3, i4, # Indices to write into
+                                    args_f = None)
                                     
                                     print(pdisc, points, fval, points_CV, fval_CV, points_test, fval_test)
                                     # np.save(pdisc, points, fval, points_CV, fval_CV, points_test, fval_test)
