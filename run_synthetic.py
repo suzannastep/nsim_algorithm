@@ -17,6 +17,7 @@ import os
 import shutil
 import sys
 import tempfile
+import time
 
 # Specific imports
 import numpy as np
@@ -151,9 +152,10 @@ if __name__ == "__main__":
             #skip running the estimator and just save the data
             for rep in range(run_for['repititions']):
                 for i4 in range(len(run_for['sigma_f'])):
-                    for i1 in range(len(run_for['N'])):
-                        for i2 in range(len(run_for['D'])):
-                            for i3 in range(len(run_for['sigma_X'])):
+                    for i2 in range(len(run_for['D'])):
+                        for i3 in range(len(run_for['sigma_X'])):
+                            starttime = time.time()
+                            for i1 in range(len(run_for['N'])):
                                 pdisc, points, fval, points_CV, fval_CV, points_test, fval_test = run_example(
                                     run_for['N'][i1],
                                     run_for['D'][i2],
@@ -165,9 +167,18 @@ if __name__ == "__main__":
                                     run_for['estimator'],
                                     rep, i1, i2, i3, i4,
                                     args_f = (bases, coeffs))
-                                
-                                print(pdisc, points, fval, points_CV, fval_CV, points_test, fval_test)
-                                # np.save(pdisc, points, fval, points_CV, fval_CV, points_test, fval_test)
+                                print(pdisc.shape, points.shape, fval.shape, points_CV.shape, fval_CV.shape, points_test.shape, fval_test.shape)
+                                paramstr = f"{manifold['manifold_id']}rep{rep}N{run_for['N'][i1]}D{run_for['D'][i2]}sigX{run_for['sigma_X'][i3]}sigf{run_for['sigma_f'][i4]}"
+                                print(paramstr)
+                                np.savez("syntheticdata"+paramstr,
+                                            pdisc=pdisc, 
+                                            points=points, 
+                                            fval=fval, 
+                                            points_CV=points_CV, 
+                                            fval_CV=fval_CV, 
+                                            points_test=points_test, 
+                                            fval_test=fval_test)
+                                print(time.time() - starttime) # i estimate that without any parallelization this will finish in ~20 hours
         finally:
             try:
                 shutil.rmtree(tmp_folder)
