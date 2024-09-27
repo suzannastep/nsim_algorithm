@@ -48,12 +48,16 @@ def run_example(n_samples,
                 random_seeds,
                 manifold,
                 f_on_manifold,
+                estimator,
                 rep, i1, i2, i3, i4, # Indices to write into
                 args_f = None):
     """
     Main function to run a single experiment. Saves the results into the
     given files. The test manifold is set below.
     """
+    assert 'options' in estimator, "MAIN: No 'options' key in estimator dict"
+    # Check if crossvalidation is done
+    CV_split = estimator['options'].get('CV_split', 0.0)
     np.random.seed(random_seeds[i1, i2, i3, i4, rep])
     # Setting the test manifold, check synthethic_problem_factory.curves
     manifold = get_manifold(ambient_dim, **manifold)
@@ -137,40 +141,35 @@ if __name__ == "__main__":
                                                               run_for['repititions']))
         savestr_base = '/run_3'
         filename_errors = 'results/' + manifold['manifold_id'] + '/' + run_for['estimator']['estimator_id'] + savestr_base
+        if not os.path.exists(filename_errors):
+            os.makedirs(filename_errors)
+            # Save a log file
+        with open(filename_errors + '/log.txt', 'w') as file:
+            file.write(json.dumps(run_for, indent=4)) # use `json.loads` to do the reverse
+        tmp_folder = tempfile.mkdtemp()
         try:
-            f_tangent_error = np.load(filename_errors + '/tangent_error.npy')
-            f_f_error_CV = np.load(filename_errors + '/f_error_CV.npy')
-            f_f_error_test = np.load(filename_errors + '/f_error_test.npy')
-            comp_time = np.load(filename_errors + '/comp_time.npy')
-        except IOError:
-            if not os.path.exists(filename_errors):
-                os.makedirs(filename_errors)
-                # Save a log file
-            with open(filename_errors + '/log.txt', 'w') as file:
-                file.write(json.dumps(run_for, indent=4)) # use `json.loads` to do the reverse
-            tmp_folder = tempfile.mkdtemp()
+            #skip running the estimator and just save the data
+            for rep in range(run_for['repititions']):
+                for i4 in range(len(run_for['sigma_f'])):
+                    for i1 in range(len(run_for['N'])):
+                        for i2 in range(len(run_for['D'])):
+                            for i3 in range(len(run_for['sigma_X'])):
+                                pdisc, points, fval, points_CV, fval_CV, points_test, fval_test = run_example(
+                                    run_for['N'][i1],
+                                    run_for['D'][i2],
+                                    run_for['sigma_X'][i3],
+                                    run_for['sigma_f'][i4],
+                                    random_seeds,
+                                    manifold,
+                                    randomPolynomialIncrements_for_parallel,
+                                    run_for['estimator'],
+                                    rep, i1, i2, i3, i4,
+                                    args_f = (bases, coeffs))
+                                
+                                print(pdisc, points, fval, points_CV, fval_CV, points_test, fval_test)
+                                # np.save(pdisc, points, fval, points_CV, fval_CV, points_test, fval_test)
+        finally:
             try:
-                #skip running the estimator and just save the data
-                for rep in range(run_for['repititions']):
-                    for i4 in range(len(run_for['sigma_f'])):
-                        for i1 in range(len(run_for['N'])):
-                            for i2 in range(len(run_for['D'])):
-                                for i3 in range(len(run_for['sigma_X'])):
-                                    pdisc, points, fval, points_CV, fval_CV, points_test, fval_test = run_example(
-                                        run_for['N'][i1],
-                                        run_for['D'][i2],
-                                        run_for['sigma_X'][i3],
-                                        run_for['sigma_f'][i4],
-                                        random_seeds,
-                                        manifold,
-                                        randomPolynomialIncrements_for_parallel,
-                                        rep, i1, i2, i3, i4,
-                                        args_f = (bases, coeffs))
-                                    
-                                    print(pdisc, points, fval, points_CV, fval_CV, points_test, fval_test)
-                                    # np.save(pdisc, points, fval, points_CV, fval_CV, points_test, fval_test)
-            finally:
-                try:
-                    shutil.rmtree(tmp_folder)
-                except:
-                    print('Failed to delete: ' + tmp_folder)
+                shutil.rmtree(tmp_folder)
+            except:
+                print('Failed to delete: ' + tmp_folder)
