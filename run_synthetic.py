@@ -164,26 +164,8 @@ if __name__ == "__main__":
                                         random_seeds,
                                         manifold,
                                         randomPolynomialIncrements_for_parallel,
-                                        run_for['estimator'],
-                                        parametergrid,
-                                        f_tangent_error,
-                                        f_f_error_CV,
-                                        f_f_error_test,
-                                        comp_time,
                                         rep, i1, i2, i3, i4,
-                                        savestr_base = savestr_base + '/' + str(rep) + '/',
                                         args_f = (bases, coeffs))
-                                    
-                                    run_example(n_samples,
-                                    ambient_dim,
-                                    noise,
-                                    var_f,
-                                    random_seeds,
-                                    manifold,
-                                    f_on_manifold,
-                                    estimator,
-                                    rep, i1, i2, i3, i4, # Indices to write into
-                                    args_f = None)
                                     
                                     print(pdisc, points, fval, points_CV, fval_CV, points_test, fval_test)
                                     # np.save(pdisc, points, fval, points_CV, fval_CV, points_test, fval_test)
