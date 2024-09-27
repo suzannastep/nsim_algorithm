@@ -17,21 +17,16 @@ import os
 import shutil
 import sys
 import tempfile
-import time
 
 # Specific imports
 import numpy as np
 # For parallelization
-from joblib import Parallel, delayed
 from sklearn.model_selection import ParameterGrid
 
 from synthethic_problem_factory.curves import *
 from synthethic_problem_factory.functions_on_manifolds import (RandomPolynomialIncrements,
                                                                randomPolynomialIncrements_for_parallel)
 from synthethic_problem_factory.sample_synthetic_data import sample_1D_fromClass_lesser
-
-from estimator import NSIM_Estimator
-
 
 # Score functions
 def MSE(prediction, reference):
@@ -54,13 +49,7 @@ def run_example(n_samples,
                 manifold,
                 f_on_manifold,
                 estimator,
-                parametergrid,
-                f_tangent_error, # File tangent error
-                f_f_error_CV, # File function error crossvalidation
-                f_f_error_test, # File function error test
-                comp_time, # File computational time
                 rep, i1, i2, i3, i4, # Indices to write into
-                savestr_base = None,
                 args_f = None):
     """
     Main function to run a single experiment. Saves the results into the
@@ -164,51 +153,33 @@ if __name__ == "__main__":
             with open(filename_errors + '/log.txt', 'w') as file:
                 file.write(json.dumps(run_for, indent=4)) # use `json.loads` to do the reverse
             tmp_folder = tempfile.mkdtemp()
-            dummy_for_shape = np.zeros((len(run_for['N']),
-                                        len(run_for['D']),
-                                        len(run_for['sigma_X']),
-                                        len(run_for['sigma_f']),
-                                        len(run_for['estimator']['options']['n_neighbors']),
-                                        len(list(parametergrid)),
-                                        run_for['repititions']))
             try:
-                # Create error containers
-                f_tangent_error = np.memmap(os.path.join(tmp_folder, 'tangent_error'), dtype='float64',
-                                           shape=dummy_for_shape.shape, mode='w+')
-                f_f_error_CV = np.memmap(os.path.join(tmp_folder, 'f_error_CV'), dtype='float64',
-                                           shape=dummy_for_shape.shape, mode='w+')
-                f_f_error_test = np.memmap(os.path.join(tmp_folder, 'f_error_test'), dtype='float64',
-                                           shape=dummy_for_shape.shape, mode='w+')
-                comp_time = np.memmap(os.path.join(tmp_folder, 'comp_time'), dtype='float64',
-                                           shape=dummy_for_shape.shape, mode='w+')
-                # Run experiments in parallel
-                Parallel(n_jobs=n_jobs, backend = "multiprocessing")(delayed(run_example)(
-                                    run_for['N'][i1],
-                                    run_for['D'][i2],
-                                    run_for['sigma_X'][i3],
-                                    run_for['sigma_f'][i4],
-                                    random_seeds,
-                                    manifold,
-                                    randomPolynomialIncrements_for_parallel,
-                                    run_for['estimator'],
-                                    parametergrid,
-                                    f_tangent_error,
-                                    f_f_error_CV,
-                                    f_f_error_test,
-                                    comp_time,
-                                    rep, i1, i2, i3, i4,
-                                    savestr_base = savestr_base + '/' + str(rep) + '/',
-                                    args_f = (bases, coeffs))
-                                    for rep in range(run_for['repititions'])
-                                    for i4 in range(len(run_for['sigma_f']))
-                                    for i1 in range(len(run_for['N']))
-                                    for i2 in range(len(run_for['D']))
-                                    for i3 in range(len(run_for['sigma_X'])))
-                # Dump memmaps to files
-                f_tangent_error.dump(filename_errors + '/tangent_error.npy')
-                f_f_error_CV.dump(filename_errors + '/f_error_CV.npy')
-                f_f_error_test.dump(filename_errors + '/f_error_test.npy')
-                comp_time.dump(filename_errors + '/comp_time.npy')
+                #skip running the estimator and just save the data
+                for rep in range(run_for['repititions']):
+                    for i4 in range(len(run_for['sigma_f'])):
+                        for i1 in range(len(run_for['N'])):
+                            for i2 in range(len(run_for['D'])):
+                                for i3 in range(len(run_for['sigma_X'])):
+                                    pdisc, points, fval, points_CV, fval_CV, points_test, fval_test = run_example(
+                                        run_for['N'][i1],
+                                        run_for['D'][i2],
+                                        run_for['sigma_X'][i3],
+                                        run_for['sigma_f'][i4],
+                                        random_seeds,
+                                        manifold,
+                                        randomPolynomialIncrements_for_parallel,
+                                        run_for['estimator'],
+                                        parametergrid,
+                                        f_tangent_error,
+                                        f_f_error_CV,
+                                        f_f_error_test,
+                                        comp_time,
+                                        rep, i1, i2, i3, i4,
+                                        savestr_base = savestr_base + '/' + str(rep) + '/',
+                                        args_f = (bases, coeffs))
+                                    
+                                    print(pdisc, points, fval, points_CV, fval_CV, points_test, fval_test)
+                                    # np.save(pdisc, points, fval, points_CV, fval_CV, points_test, fval_test)
             finally:
                 try:
                     shutil.rmtree(tmp_folder)
