@@ -118,7 +118,7 @@ if __name__ == "__main__":
             'D' : [4,8,16],
             'sigma_X' : [0.25],
             'sigma_f' : [0.0],#, 1e-4, 1e-3, 1e-2, 1e-1],
-            'repititions' : 20,
+            'repititions' : 5,#20,
             # Estimator information
             'estimator' : {
                 'estimator_id' : 'nsim',
