@@ -96,7 +96,7 @@ if __name__ == "__main__":
         n_jobs = 1 # Default 1 jobs
     print('Using n_jobs = {0}'.format(n_jobs))
     # Define manifolds to test
-    manifolds = [#{'start' : 0, 'end' : 1.0, 'manifold_id' : 'identity'},
+    manifolds = [{'start' : 0, 'end' : 1.0, 'manifold_id' : 'identity'},
                 {'start' : 0, 'end' : np.pi, 'manifold_id' : 'scurve'},
                 {'start' : 0, 'end' : 2.0 * np.pi, 'manifold_id' : 'helix'}]
     for manifold in manifolds:
