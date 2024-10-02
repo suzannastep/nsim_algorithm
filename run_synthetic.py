@@ -114,7 +114,7 @@ if __name__ == "__main__":
         print("Considering manifold {0}".format(manifold['manifold_id']))
         # Parameters
         run_for = {
-            'N' : [2000],#[200 * (2 ** i) for i in range(13)],
+            'N' : [2000,4000,8000,16000],#[200 * (2 ** i) for i in range(13)],
             'D' : [4,8,16],
             'sigma_X' : [0.25],
             'sigma_f' : [0.0],#, 1e-4, 1e-3, 1e-2, 1e-1],
